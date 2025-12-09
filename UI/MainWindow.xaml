@@ -29,9 +29,52 @@
             <Setter Property="Background" Value="Black"/>
             <Setter Property="BorderBrush" Value="Blue"/>
             <Setter Property="BorderThickness" Value="2"/>
-
         </Style>
 
+        <!-- Nút chính -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="140"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2563EB"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#1D4ED8"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- TextBox thời gian -->
+        <Style x:Key="TimeTextBox" TargetType="TextBox">
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#020617"/>
+            <Setter Property="BorderBrush" Value="#374151"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Width" Value="120"/>
+        </Style>
+        
 
     </Window.Resources>
 
@@ -48,11 +91,13 @@
             <Grid>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/><!-- title -->                   
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="Auto"/><!-- time -->                    
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="Auto"/><!-- lock -->                  
                     <RowDefinition Height="20"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- button -->
                 </Grid.RowDefinitions>
 
                 <!-- Tiêu đề -->
@@ -67,45 +112,47 @@
                 </StackPanel>
 
 
-                <Grid Grid.Row="2" Margin="0,0,0,4">
+                <!-- Hàng Start / End -->
+                <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
+                    <!-- Start -->
+                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                        <TextBlock Text="Thời gian bắt đầu (Start)"
+                                   Style="{StaticResource LabelText}"/>
+                        <!-- Gợi ý định dạng: HH:mm -->
+                        <TextBox x:Name="TxtStartTime"
+                                 Style="{StaticResource TimeTextBox}"
+                                 Text="22:30"/>
+                    </StackPanel>
+
+                    <!-- End -->
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                        <TextBlock Text="Thời gian kết thúc (End)"
+                                   Style="{StaticResource LabelText}"/>
+                        <TextBox x:Name="TxtEndTime"
+                                 Style="{StaticResource TimeTextBox}"
+                                 Text="23:45"/>
+                    </StackPanel>
                 </Grid>
 
+                <!-- Checkbox Lock -->
+                <CheckBox x:Name="ChkLock"
+                          Grid.Row="4"
+                          Margin="4,0,0,0"
+                          Foreground="#E5E7EB"
+                          FontSize="13"
+                          Content="Khóa máy khi đến thời gian End" />
 
-                <!-- Chọn thời gian-->
-                <StackPanel Orientation="Horizontal"  Grid.Row="2" Grid.Column="0">
-                    <TextBlock Text="Giờ" 
-                               Style="{StaticResource LabelText}"
-                               />
-                    <ComboBox x:Name="cbxHour"
-                              Style="{StaticResource comboBoxTime}"
-                              >
-                        <ComboBoxItem Content="00"/>
-                        <ComboBoxItem Content="01"/>
-                        <ComboBoxItem Content="02"/>
-                        <ComboBoxItem Content="03"/>
-                        <ComboBoxItem Content="04"/>
-                        <ComboBoxItem Content="05"/>
-
-                    </ComboBox>
-                    <ComboBox x:Name="cbxMinute"
-                              Style="{StaticResource comboBoxTime}"
-                              >
-                        <ComboBoxItem Content="05"/>
-                        <ComboBoxItem Content="10"/>
-                        <ComboBoxItem Content="15"/>
-                    </ComboBox>
-                </StackPanel>
-
-                <!-- 2 button-->
+                <!-- Nút đặt lịch -->
+                <Button Grid.Row="6"
+                        Content="Đặt lịch"
+                        Style="{StaticResource PrimaryButton}"/>
                 
             </Grid>
-
-
         </Border>
     </Grid>
 
