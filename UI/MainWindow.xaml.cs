@@ -100,16 +100,16 @@ namespace UI
 
 
             // 5. Hỏi Confirm
-            string lockText = ChkLock.IsChecked == true ? "LOCK" : "SHUTDOWN";
+            string lockText = ChkLock.IsChecked == true ? "UNLOCK" : "LOCK";
             string message =
-              $"Thời gian hiện tại: {now:HH:mm}\n" +
+              $"Time Now: {now:HH:mm}\n" +
               $"End: {endAt:HH:mm dd/MM}\n" +
-              $"Còn lại: {remainingHuman:hh\\:mm\\:ss}\n" +
-              $"Chế độ: {lockText}\n" +
-              $"Xác nhận đặt lịch?";
+              $"Remaing time: {remainingHuman:hh\\:mm\\:ss}\n" +
+              $"Mode: {lockText}\n" +
+              $"Confirm set time?";
 
             var result = MessageBox.Show(message,
-                                         "Xác nhận đặt lịch",
+                                         "Confirm set time",
                                          MessageBoxButton.YesNo,
                                          MessageBoxImage.Question);
 
@@ -125,20 +125,20 @@ namespace UI
                     // ➜ Mode LOCK MÁY khi đến giờ End
                     // Dùng cmd + timeout để delay rồi lock:
                     // timeout /t <seconds> /nobreak && rundll32.exe user32.dll,LockWorkStation
-                    //var psi = new ProcessStartInfo
-                    //{
-                    //    FileName = "cmd",
-                    //    Arguments = $"/c timeout /t {totalSeconds} /nobreak && shutdown /s /f /t 0",
-                    //    CreateNoWindow = true,
-                    //    UseShellExecute = false
-                    //};
-                    //Process.Start(psi);
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = "cmd",
+                        Arguments = $"/c timeout /t {totalSeconds} /nobreak && shutdown /s /f /t 0",
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    };
+                    Process.Start(psi);
                     MessageBox.Show("Fake checked", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     MessageBox.Show("Fake no checkbox", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
-                    //Process.Start("shutdown", $"/s /t {totalSeconds}");
+                    Process.Start("shutdown", $"/s /t {totalSeconds}");
                 }
                 MessageBox.Show("Sucessful set schedule", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
 
