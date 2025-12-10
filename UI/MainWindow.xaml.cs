@@ -100,7 +100,7 @@ namespace UI
 
 
             // 5. Hỏi Confirm
-            string lockText = ChkLock.IsChecked == true ? "UNLOCK" : "LOCK";
+            string lockText = ChkLock.IsChecked == true ? "LOCK" : "UNLOCK";
             string message =
               $"Time Now: {now:HH:mm}\n" +
               $"End: {endAt:HH:mm dd/MM}\n" +
