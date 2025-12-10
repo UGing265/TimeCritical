@@ -98,7 +98,7 @@
                 Height="260"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
-            
+
             <Border.Effect>
                 <DropShadowEffect BlurRadius="16"
                                   ShadowDepth="0"
@@ -138,6 +138,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Start -->
@@ -158,6 +159,20 @@
                                  Style="{StaticResource TimeTextBox}"
                                  Text="23:45"/>
                     </StackPanel>
+
+                    <!-- End day: Today / Next day -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="End day"
+                                   Style="{StaticResource LabelText}"/>
+                        <ComboBox x:Name="CbxEndDay"
+                                  Margin="6"
+                                  Width="110"
+                                  HorizontalAlignment="Left"
+                                  >
+                            <ComboBoxItem Content="Today" IsSelected="True"/>
+                            <ComboBoxItem Content="Next day"/>
+                        </ComboBox>
+                    </StackPanel>
                 </Grid>
 
                 <!-- Checkbox Lock -->
@@ -166,7 +181,7 @@
                           Margin="4,0,0,0"
                           Foreground="#E5E7EB"
                           FontSize="13"
-                          Content="Khóa máy khi đến thời gian End" />
+                          Content="Lock Shutdown" />
 
                 <!-- Nút đặt lịch -->
                 <Button x:Name="btnSchedule"

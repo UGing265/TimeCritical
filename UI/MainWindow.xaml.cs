@@ -50,32 +50,61 @@ namespace UI
             // 3. Lấy thời gian hiện tại (Theo hôm nay)
             DateTime now = DateTime.Now;
             DateTime today = now.Date;
+            // 3) Determine Next day using SelectedIndex (0 = Today, 1 = Next day)
+            bool isNextDay = (CbxEndDay.SelectedIndex == 1);
+
+            // 4) Build startAt and endAt as DateTime
             DateTime startAt = today + start;
             DateTime endAt = today + end;
+            if (isNextDay)
+                endAt = endAt.AddDays(1);
 
-            if (endAt < now)
+            // 5) Validate logical relationship
+            // If End is "Today" it must be strictly after Start (same day)
+            if (!isNextDay && end <= start)
             {
-                MessageBox.Show($"Alo, Now is {now.ToString("HH:mm tt")} and End time is {endAt.ToString("HH:mm tt")}.\n It's invaid logic", "Warn", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("When End = Today, End time must be later than Start time.\n" +
+                                "If you want cross-midnight (e.g. Start 23:50 → End 01:00), choose 'Next day'.",
+                                "Invalid range", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (startAt < now)
+            // 6) Ensure endAt is in the future
+            if (endAt <= now)
             {
-                MessageBox.Show($"Alo, Now is {now.ToString("HH:mm tt")} and Start time is {startAt.ToString("HH:mm tt")}.\n It's invaid logic", "Warn", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return ;
+                MessageBox.Show($"Now: {now:HH:mm dd/MM}\nEnd: {endAt:HH:mm dd/MM}\n\nEnd time is already passed.",
+                                "Time passed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
+
+            //if (startAt < now)
+            //{
+            //    MessageBox.Show($"Alo, Now is {now.ToString("HH:mm tt")} and Start time is {startAt.ToString("HH:mm tt")}.\n It's invaid logic", "Warn", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    return;
+            //}
 
 
             // 4. Tính thời gian từ bây giờ đến End
             TimeSpan delta = endAt - now;
-            int totalSeconds = (int)delta.TotalSeconds;
+            int totalSeconds = (int)Math.Ceiling(delta.TotalSeconds); // seconds for shutdown/timeout
+            MessageBox.Show($"{totalSeconds}", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            int totalHours = (int)delta.TotalHours;      // total hours (can be > 24)
+            int mins = delta.Minutes;                    // minutes component (0-59)
+            int secs = delta.Seconds;                    // seconds component (0-59)
+            
+            string remainingHuman = $"{totalHours:D2}:{mins:D2}:{secs:D2}";
+            string remainingAlt = $"{totalHours}h {mins}m {secs}s";
+
+           
+
 
             // 5. Hỏi Confirm
             string lockText = ChkLock.IsChecked == true ? "LOCK" : "SHUTDOWN";
             string message =
               $"Thời gian hiện tại: {now:HH:mm}\n" +
-              $"End: {endAt:HH:mm}\n" +
-              $"Còn lại: {delta:hh\\:mm\\:ss}\n" +
+              $"End: {endAt:HH:mm dd/MM}\n" +
+              $"Còn lại: {remainingHuman:hh\\:mm\\:ss}\n" +
               $"Chế độ: {lockText}\n" +
               $"Xác nhận đặt lịch?";
 
