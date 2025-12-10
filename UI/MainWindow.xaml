@@ -169,9 +169,12 @@
                           Content="Khóa máy khi đến thời gian End" />
 
                 <!-- Nút đặt lịch -->
-                <Button Grid.Row="6"
+                <Button x:Name="btnSchedule"
+                        Grid.Row="6"
                         Content="Đặt lịch"
-                        Style="{StaticResource PrimaryButton}"/>
+                        Style="{StaticResource PrimaryButton}"
+                        Click="BtnSchedule_Click"
+                        />
 
             </Grid>
         </Border>
