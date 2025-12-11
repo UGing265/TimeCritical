@@ -1,0 +1,165 @@
+﻿<Window x:Class="UI.ClockWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UI"
+        mc:Ignorable="d"
+        Title="Clock" Height="400" Width="400"
+        WindowStartupLocation="CenterScreen"
+        Background="#1a1a1a"
+        BorderThickness="0"
+        AllowsTransparency="False"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight">
+
+    <Window.Resources>
+        <Style x:Key="ClockDisplayText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="72"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+        </Style>
+
+        <Style x:Key="ClockButton" TargetType="Button">
+            <Setter Property="Width" Value="60"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="30">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#444444"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#333333"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#1a1a1a">
+        <Border CornerRadius="20"
+                Background="#2a2a2a"
+                Padding="40"
+                Width="auto"
+                Height="auto"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="20">
+
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20"
+                                  ShadowDepth="0"
+                                  Opacity="0.5"
+                                  Color="Black"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Clock Icon -->
+                <TextBlock Grid.Row="0"
+                           Text="⏱"
+                           FontSize="40"
+                           Foreground="#888888"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Margin="0,0,0,20"/>
+
+                <!-- Time Display -->
+                <TextBlock x:Name="TxtTime"
+                           Grid.Row="0"
+                           Text="00:10:02"
+                           Style="{StaticResource ClockDisplayText}"
+                           VerticalAlignment="Center"
+                           Margin="0,30,0,0"/>
+
+                <!-- Buttons: Play/Reset and Close -->
+                <StackPanel Grid.Row="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Margin="0,20,0,0"
+                            >
+
+                    <!-- Play Button -->
+                    <Button x:Name="BtnPlay"
+                            Style="{StaticResource ClockButton}"
+                            Background="#9D4EDD">
+                        <Path Data="M 8 5 L 8 19 L 18 12 Z"
+                              Fill="White"
+                              Stretch="UniformToFill"
+                              Margin="2,0,0,0"
+                              Width="20"
+                              Height="20"/>
+                    </Button>
+
+                    <!-- Reset/Refresh Button -->
+                    <Button x:Name="BtnReset"
+                            Style="{StaticResource ClockButton}"
+                            Background="#555555">
+                        <Path Data="M 12 2 C 6.48 2 2 6.48 2 12 C 2 17.52 6.48 22 12 22 C 17.52 22 22 17.52 22 12 L 20 12 C 20 16.41 16.41 20 12 20 C 7.59 20 4 16.41 4 12 C 4 7.59 7.59 4 12 4 C 14.04 4 15.93 4.75 17.29 6 L 14 6 L 14 8 L 20 8 L 20 2 L 18 2 L 18 5.29 C 16.37 3.74 14.23 2 12 2 Z"
+                              Fill="White"
+                              Stretch="UniformToFill"
+                              Width="20"
+                              Height="20"/>
+                    </Button>
+
+                </StackPanel>
+
+                <!-- Close/Cancel Button (Top Right) -->
+                <Button x:Name="BtnClose"
+                        Grid.Row="0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Width="30"
+                        Height="30"
+                        Foreground="#888888"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        FontSize="18"
+                        Padding="0"
+                        Content="✕">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+            </Grid>
+        </Border>
+    </Grid>
+
+</Window>
