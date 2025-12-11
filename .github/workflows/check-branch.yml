@@ -1,0 +1,19 @@
+name: Enforce Branch Flow
+
+on:
+  pull_request:
+    branches: [ "main" ] # Chỉ chạy khi target là main
+
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if source branch is dev
+        run: |
+          if [[ "${{ github.head_ref }}" != "dev" ]]; then
+            echo "❌ ERROR: Bạn chỉ được phép merge vào main từ nhánh dev."
+            echo "👉 Hãy merge nhánh ${{ github.head_ref }} vào dev trước!"
+            exit 1
+          else
+            echo "✅ Valid branch: dev -> main"
+          fi
