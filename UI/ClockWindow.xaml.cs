@@ -19,9 +19,25 @@ namespace UI
     /// </summary>
     public partial class ClockWindow : Window
     {
+        private double aspectRatio = 4.0 / 3.0; // 4:3 aspect ratio
+
         public ClockWindow()
         {
             InitializeComponent();
+            this.SizeChanged += ClockWindow_SizeChanged;
+        }
+
+        private void ClockWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Maintain 4:3 aspect ratio
+            if (e.WidthChanged)
+            {
+                this.Height = this.Width / aspectRatio;
+            }
+            else if (e.HeightChanged)
+            {
+                this.Width = this.Height * aspectRatio;
+            }
         }
     }
 }
