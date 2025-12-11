@@ -20,27 +20,41 @@ namespace UI
     public partial class ClockWindow : Window
     {
         private double aspectRatio = 4.0 / 3.0; // 4:3 aspect ratio
-        private bool isUserResizing = false;
 
         public ClockWindow()
         {
             InitializeComponent();
-            this.MouseLeftButtonDown += (s, e) => 
-            {
-                if (e.OriginalSource == this)
-                    isUserResizing = true;
-            };
-            this.MouseLeftButtonUp += (s, e) => isUserResizing = false;
             this.SizeChanged += ClockWindow_SizeChanged;
+            this.MouseLeftButtonDown += Window_MouseLeftButtonDown;
+            this.SourceInitialized += (s, e) => ApplyRoundedCorners();
+        }
+
+        private void ApplyRoundedCorners()
+        {
+            // Create rounded rectangle geometry
+            var rect = new RectangleGeometry(new Rect(0, 0, this.ActualWidth, this.ActualHeight), 30, 30);
+            this.Clip = rect;
         }
 
         private void ClockWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            // Update clipping when resized
+            ApplyRoundedCorners();
+
             // Maintain 4:3 aspect ratio - prioritize width
             double expectedHeight = this.Width / aspectRatio;
             if (Math.Abs(this.Height - expectedHeight) > 0.5)
             {
                 this.Height = expectedHeight;
+            }
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Allow dragging the window
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                this.DragMove();
             }
         }
     }

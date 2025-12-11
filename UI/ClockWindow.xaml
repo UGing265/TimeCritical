@@ -7,12 +7,15 @@
         mc:Ignorable="d"
         Title="Clock" Height="300" Width="400"
         WindowStartupLocation="CenterScreen"
-        Background="#1a1a1a"
+        Background="Transparent"
         BorderThickness="0"
-        AllowsTransparency="False"
-        ResizeMode="CanResize"
+        AllowsTransparency="True"
+        ResizeMode="CanResizeWithGrip"
         MinHeight="133"
-        MinWidth="133">
+        MinWidth="133"
+        WindowStyle="None"
+        >
+    
 
     <Window.Resources>
         <Style x:Key="ClockDisplayText" TargetType="TextBlock">
@@ -53,10 +56,10 @@
         </Style>
     </Window.Resources>
 
-    <Grid Background="#1a1a1a">
+    <Border CornerRadius="30" Background="#1a1a1a" Padding="0">
         <Viewbox Stretch="UniformToFill">
             <Grid Width="400" Height="300" Background="#1a1a1a">
-                <Border CornerRadius="20"
+                <Border CornerRadius="30"
                         Background="#2a2a2a"
                         Padding="20"
                         HorizontalAlignment="Center"
@@ -155,6 +158,6 @@
         </Border>
             </Grid>
         </Viewbox>
-    </Grid>
+    </Border>
 
 </Window>
