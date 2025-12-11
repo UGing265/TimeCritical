@@ -1,0 +1,31 @@
+name: .NET Build Check
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Step 2: Install .NET SDK
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x  # CHANGE THIS to your version (e.g., 6.0.x, 7.0.x)
+
+    # Step 3: Restore dependencies (NuGet packages)
+    - name: Restore dependencies
+      run: dotnet restore
+
+    # Step 4: Build
+    # If the code has errors, this step fails and turns the Action Red.
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
