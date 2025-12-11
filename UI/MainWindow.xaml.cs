@@ -18,13 +18,38 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        // 1. Add these two lines here
+        System.Windows.Threading.DispatcherTimer _timer;
+        DateTime _targetEndTime;
         public MainWindow()
         {
             InitializeComponent();
 
+            // 2. Setup the timer here
+            _timer = new System.Windows.Threading.DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1); // Tick every 1 second
+            _timer.Tick += Timer_Tick;
 
 
+        }
 
+        // 3. Add this function somewhere inside the class
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            TimeSpan remaining = _targetEndTime - DateTime.Now;
+
+            // If time is up, stop updating text
+            if (remaining.TotalSeconds <= 0)
+            {
+                _timer.Stop();
+                Title = "SHUTDOWN NOW"; // Or update a TextBlock
+            }
+            else
+            {
+                // Update the Window Title or a TextBlock to show countdown
+                // Format: 00:00:09
+                this.Title = $"Shutdown in: {remaining:hh\\:mm\\:ss}";
+            }
         }
 
         private void BtnSchedule_Click(object sender, RoutedEventArgs e)
@@ -175,5 +200,13 @@ namespace UI
             }
 
         }
+
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
+          
+            MessageBox.Show("Schedule Cancelled.");
+        }
+
+       
     }
 }

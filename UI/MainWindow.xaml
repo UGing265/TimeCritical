@@ -93,9 +93,10 @@
 
         <Border CornerRadius="18"
                 Background="#121637"
-                Padding="20"
+                Padding="10"
                 Width="620"
-                Height="260"
+                Height="290"
+                Margin="0,50,0,0"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
 
@@ -118,6 +119,9 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="20"/>
                     <!-- button -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="20"/>
+                    <!-- see result -->
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
@@ -182,7 +186,7 @@
                           Foreground="#E5E7EB"
                           FontSize="13"
                           Content="Lock Shutdown" />
-                
+
                 <CheckBox x:Name="ChkNow"
                           Grid.Row="5"
                           Margin="4,0,0,0"
@@ -197,6 +201,25 @@
                         Style="{StaticResource PrimaryButton}"
                         Click="BtnSchedule_Click"
                         />
+
+                <StackPanel Grid.Row="8" VerticalAlignment="Bottom" Margin="0,10,0,0">
+                    <TextBlock x:Name="TxtCountdown" 
+                               Style="{StaticResource LabelText}"
+                                   Foreground="#00FF00" 
+                                   HorizontalAlignment="Center"
+                                   Text="Hi" 
+               Visibility="Collapsed"/>
+
+                    <Button x:Name="BtnCancel"
+                            Content="Cancel Timer"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left"
+                            
+                            Background="#DC2626"
+                            Click="BtnCancel_Click"
+                            Visibility="Visible"
+                            />        
+                </StackPanel>
 
             </Grid>
         </Border>
