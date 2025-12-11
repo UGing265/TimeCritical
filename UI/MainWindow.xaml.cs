@@ -18,14 +18,14 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        // 1. Add these two lines here
+        // --- 1. VARIABLES FOR THE COUNTDOWN ---
         System.Windows.Threading.DispatcherTimer _timer;
         DateTime _targetEndTime;
         public MainWindow()
         {
             InitializeComponent();
 
-            // 2. Setup the timer here
+            // --- 2. SETUP THE TIMER ---
             _timer = new System.Windows.Threading.DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1); // Tick every 1 second
             _timer.Tick += Timer_Tick;
@@ -33,8 +33,9 @@ namespace UI
 
         }
 
-        // 3. Add this function somewhere inside the class
-        private void Timer_Tick(object sender, EventArgs e)
+        
+        // --- 3. THE COUNTDOWN LOGIC (Visual Only) ---
+        private void Timer_Tick(object? sender, EventArgs e)
         {
             TimeSpan remaining = _targetEndTime - DateTime.Now;
 
@@ -42,48 +43,41 @@ namespace UI
             if (remaining.TotalSeconds <= 0)
             {
                 _timer.Stop();
-                Title = "SHUTDOWN NOW"; // Or update a TextBlock
+                this.Title = "SHUTDOWN STARTED";
             }
             else
             {
-                // Update the Window Title or a TextBlock to show countdown
-                // Format: 00:00:09
+                // Update the Window Title to show countdown (e.g., "Shutdown in: 00:05:30")
                 this.Title = $"Shutdown in: {remaining:hh\\:mm\\:ss}";
             }
         }
 
         private void BtnSchedule_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Lấy Text từ UI
-            string startText = TxtStartTime.Text;
-            string endText = TxtEndTime.Text;
 
-            // 2. Parse thời gian (định dạng HH:mm)
-            if (!TimeSpan.TryParse(startText, out var start))
+            // 1. Parse Time (Format HH:mm)
+            if (!TimeSpan.TryParse(TxtStartTime.Text, out var start))
             {
                 MessageBox.Show("Oh no! start time is invaid HH:mm (23:00).", "Warn", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return; //tránh spam thông báo lỗi ở dưới nữa
+                return;
 
             }
 
-            if (!TimeSpan.TryParse(endText, out var end))
+            if (!TimeSpan.TryParse(TxtEndTime.Text, out var end))
             {
                 MessageBox.Show("Oh no! end time is invaid! HH:mm (23:00).", "Warn", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // 3. Lấy thời gian hiện tại (Theo hôm nay)
+            // 2. Vadation logic 
             DateTime now = DateTime.Now;
             DateTime today = now.Date;
-            bool isNextDay = (CbxEndDay.SelectedIndex == 1);
-
             DateTime startAt = today + start;
             DateTime endAt = today + end;
-            if (isNextDay)
-                endAt = endAt.AddDays(1);
+            bool isNextDay = (CbxEndDay.SelectedIndex == 1);
 
-
-            // If End is "Today" it must be strictly after Start (same day)
+            if (isNextDay) endAt = endAt.AddDays(1);
+            if (startAt < now) startAt = startAt.AddDays(1);
             if (!isNextDay && end <= start)
             {
                 MessageBox.Show("When End = Today, End time must be later than Start time.\n" +
@@ -99,20 +93,14 @@ namespace UI
                 return;
             }
 
-            //if (startAt < now)
-            //{
-            //    MessageBox.Show($"Alo, Now is {now.ToString("HH:mm tt")} and Start time is {startAt.ToString("HH:mm tt")}.\n It's invaid logic", "Warn", MessageBoxButton.OK, MessageBoxImage.Warning);
-            //    return;
-            //}
 
-
-            // 4. Tính thời gian từ bây giờ đến End
+            // 3. Calculate time to seconds
             // Final Answer
             int resultTotalSeconds;
 
             // a. (now -> EndAt)
             TimeSpan delta = endAt - now;
-            int totalSeconds = (int)Math.Ceiling(delta.TotalSeconds); // seconds for shutdown/timeout
+            int totalSeconds = (int)Math.Ceiling(delta.TotalSeconds); 
             //-----Combo------
             // B. (now -> StartAt)
             TimeSpan waitGap = startAt - now;
@@ -127,7 +115,7 @@ namespace UI
 
 
 
-            // 5. Hỏi Confirm
+            // 4. Ask Confirm
             string lockText = ChkLock.IsChecked == true ? "LOCK" : "UNLOCK";
             string message;
 
@@ -170,6 +158,11 @@ namespace UI
                 return;
             }
 
+            // 1. Save the End Time so the Timer knows when to stop
+            _targetEndTime = endAt;
+            // 2. Start the Visual Countdown
+            _timer.Start();
+
             try
             {
                 if (ChkLock.IsChecked == true)
@@ -189,7 +182,7 @@ namespace UI
                 {
                     //MODE: UNLOCK
                     MessageBox.Show("Fake no checkbox", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
-                    Process.Start("shutdown", $"/s /t {resultTotalSeconds}");
+                    //Process.Start("shutdown", $"/s /t {resultTotalSeconds}");
                 }
                 //MessageBox.Show("Sucessful set schedule", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -203,10 +196,13 @@ namespace UI
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
-          
+            _timer.Stop();
+            this.Title = "MainWindow"; // Reset Title
+            Process.Start("shutdown", "/a"); // Cancel Windows Shutdown
+            Process.Start(new ProcessStartInfo("taskkill", "/F /IM timeout.exe") { CreateNoWindow = true, UseShellExecute = false });
             MessageBox.Show("Schedule Cancelled.");
         }
 
-       
+
     }
 }

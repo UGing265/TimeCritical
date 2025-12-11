@@ -166,7 +166,7 @@
 
                     <!-- End day: Today / Next day -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="End day"
+                        <TextBlock Text="Only set to end day"
                                    Style="{StaticResource LabelText}"/>
                         <ComboBox x:Name="CbxEndDay"
                                   Margin="6"
