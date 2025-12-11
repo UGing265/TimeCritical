@@ -2,8 +2,7 @@ name: Enforce Branch Flow
 
 on:
   pull_request:
-    # Nên để cả dev để workflow chạy và trả về "Xanh" (Pass) cho dev
-    branches: [ "main", "dev" ] 
+    branches: [ "main", "dev" ] # Chạy check cho cả 2 nhánh
 
 jobs:
   check-source-branch:
@@ -11,28 +10,25 @@ jobs:
     steps:
       - name: Check Branch Flow
         run: |
+          # Khai báo biến cho gọn
           TARGET_BRANCH="${{ github.base_ref }}"
           SOURCE_BRANCH="${{ github.head_ref }}"
           
-          echo "Debug: Merging $SOURCE_BRANCH -> $TARGET_BRANCH"
+          echo "🔍 Checking Flow: $SOURCE_BRANCH -> $TARGET_BRANCH"
 
-          # --- RULE 1: Nếu đích là MAIN ---
+          # --- TRƯỜNG HỢP 1: Merge vào MAIN ---
           if [[ "$TARGET_BRANCH" == "main" ]]; then
+            # Luật: Chỉ được phép nhận từ dev
             if [[ "$SOURCE_BRANCH" != "dev" ]]; then
-              echo "❌ ERROR: Bạn chỉ được phép merge vào MAIN từ nhánh DEV."
+              echo "❌ ERROR: Bạn đang merge vào MAIN từ $SOURCE_BRANCH."
+              echo "👉 Quy định: Chỉ được merge từ 'dev' vào 'main'."
               exit 1
             fi
-          fi
-
-          # --- RULE 2: Nếu đích là DEV (Tuỳ chọn - để chặn merge bậy bạ) ---
-          # Ví dụ: Chặn không cho merge ngược từ main vào dev
-          if [[ "$TARGET_BRANCH" == "dev" ]]; then
-             if [[ "$SOURCE_BRANCH" == "main" ]]; then
-                echo "❌ ERROR: Không được merge ngược từ MAIN vào DEV."
-                exit 1
-             fi
-             # Còn lại (feat/..., fix/...) thì cho qua
-             echo "✅ Valid feature branch merge."
-          fi
+            echo "✅ Hợp lệ: dev -> main"
           
-          echo "✅ All branch checks passed."
+          # --- TRƯỜNG HỢP 2: Merge vào DEV ---
+          elif [[ "$TARGET_BRANCH" == "dev" ]]; then
+            # Luật: Dev nhận tất cả (trừ khi bạn muốn chặn main merge ngược về)
+            echo "✅ Hợp lệ: Feature branch merge vào Dev."
+            
+          fi
