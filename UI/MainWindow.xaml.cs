@@ -50,16 +50,14 @@ namespace UI
             // 3. Lấy thời gian hiện tại (Theo hôm nay)
             DateTime now = DateTime.Now;
             DateTime today = now.Date;
-            // 3) Determine Next day using SelectedIndex (0 = Today, 1 = Next day)
             bool isNextDay = (CbxEndDay.SelectedIndex == 1);
 
-            // 4) Build startAt and endAt as DateTime
             DateTime startAt = today + start;
             DateTime endAt = today + end;
             if (isNextDay)
                 endAt = endAt.AddDays(1);
 
-            // 5) Validate logical relationship
+
             // If End is "Today" it must be strictly after Start (same day)
             if (!isNextDay && end <= start)
             {
@@ -69,7 +67,6 @@ namespace UI
                 return;
             }
 
-            // 6) Ensure endAt is in the future
             if (endAt <= now)
             {
                 MessageBox.Show($"Now: {now:HH:mm dd/MM}\nEnd: {endAt:HH:mm dd/MM}\n\nEnd time is already passed.",
@@ -85,33 +82,63 @@ namespace UI
 
 
             // 4. Tính thời gian từ bây giờ đến End
+            // Final Answer
+            int resultTotalSeconds;
+
+            // a. (now -> EndAt)
             TimeSpan delta = endAt - now;
             int totalSeconds = (int)Math.Ceiling(delta.TotalSeconds); // seconds for shutdown/timeout
-            MessageBox.Show($"{totalSeconds}", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
+            //-----Combo------
+            // B. (now -> StartAt)
+            TimeSpan waitGap = startAt - now;
+            int secondToWaits = (int)Math.Ceiling(waitGap.TotalSeconds);
 
-            int totalHours = (int)delta.TotalHours;      // total hours (can be > 24)
-            int mins = delta.Minutes;                    // minutes component (0-59)
-            int secs = delta.Seconds;                    // seconds component (0-59)
-            
-            string remainingHuman = $"{totalHours:D2}:{mins:D2}:{secs:D2}";
-            string remainingAlt = $"{totalHours}h {mins}m {secs}s";
+            // C. (StartAt -> EndAt)
+            TimeSpan durationGap = endAt - startAt;
+            int secondsDuration = (int)Math.Ceiling(durationGap.TotalSeconds);
+            //----------------
 
-           
+
+
 
 
             // 5. Hỏi Confirm
             string lockText = ChkLock.IsChecked == true ? "LOCK" : "UNLOCK";
-            string message =
-              $"Time Now: {now:HH:mm}\n" +
-              $"End: {endAt:HH:mm dd/MM}\n" +
-              $"Remaing time: {remainingHuman:hh\\:mm\\:ss}\n" +
-              $"Mode: {lockText}\n" +
-              $"Confirm set time?";
+            string message;
+
+            if (ChkNow.IsChecked != true)
+            {
+                 message =
+                  $"Current Time: {now:HH:mm}\n" +
+                  $"-----------------------------\n" +
+                  $"1. Wait until: {startAt:HH:mm tt} (in {waitGap.Hours}h {waitGap.Minutes}m)\n" +
+                  $"2. Then run for: {Math.Ceiling(durationGap.TotalHours)}h {durationGap.Minutes}m\n" +
+                  $"3. Final Shutdown: {endAt:HH:mm tt}\n" +
+                  $"-----------------------------\n" +
+                  $"Mode: {lockText}\n\n" +
+                  $"Confirm schedule?";
+                resultTotalSeconds = secondsDuration;
+            }
+            else
+            {
+                 message =
+                  $"Current Time: {now:HH:mm}\n" +
+                  $"-----------------------------\n" +
+                  $"1. Start Time: {now:HH:mm tt} \n" +
+                  $"2. Remaing time: {Math.Ceiling(delta.TotalHours)}h {delta.Minutes}m\n" +
+                  $"3. Final Shutdown: {endAt:HH:mm tt}\n" +
+                  $"-----------------------------\n" +
+                  $"Mode: {lockText}\n\n" +
+                  $"Confirm schedule?";
+                resultTotalSeconds = totalSeconds;
+            }
+            MessageBox.Show($"{resultTotalSeconds}s", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
 
             var result = MessageBox.Show(message,
                                          "Confirm set time",
                                          MessageBoxButton.YesNo,
                                          MessageBoxImage.Question);
+
 
             if (result == MessageBoxResult.No)
             {
@@ -122,25 +149,24 @@ namespace UI
             {
                 if (ChkLock.IsChecked == true)
                 {
-                    // ➜ Mode LOCK MÁY khi đến giờ End
-                    // Dùng cmd + timeout để delay rồi lock:
-                    // timeout /t <seconds> /nobreak && rundll32.exe user32.dll,LockWorkStation
+                    // MODE: LOCK
                     var psi = new ProcessStartInfo
                     {
                         FileName = "cmd",
-                        Arguments = $"/c timeout /t {totalSeconds} /nobreak && shutdown /s /f /t 0",
+                        Arguments = $"/c timeout /t {secondToWaits} /nobreak && shutdown /s /f /t {resultTotalSeconds}",
                         CreateNoWindow = true,
                         UseShellExecute = false
                     };
-                    Process.Start(psi);
+                    //Process.Start(psi);
                     MessageBox.Show("Fake checked", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
+                    //MODE: UNLOCK
                     MessageBox.Show("Fake no checkbox", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
-                    Process.Start("shutdown", $"/s /t {totalSeconds}");
+                    Process.Start("shutdown", $"/s /t {resultTotalSeconds}");
                 }
-                MessageBox.Show("Sucessful set schedule", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Sucessful set schedule", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
             catch (Exception ex)
