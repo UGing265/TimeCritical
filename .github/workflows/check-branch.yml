@@ -1,0 +1,34 @@
+name: Enforce Branch Flow
+
+on:
+  pull_request:
+    branches: [ "main", "dev" ] # Chạy check cho cả 2 nhánh
+
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Branch Flow
+        run: |
+          # Khai báo biến cho gọn
+          TARGET_BRANCH="${{ github.base_ref }}"
+          SOURCE_BRANCH="${{ github.head_ref }}"
+          
+          echo "🔍 Checking Flow: $SOURCE_BRANCH -> $TARGET_BRANCH"
+
+          # --- TRƯỜNG HỢP 1: Merge vào MAIN ---
+          if [[ "$TARGET_BRANCH" == "main" ]]; then
+            # Luật: Chỉ được phép nhận từ dev
+            if [[ "$SOURCE_BRANCH" != "dev" ]]; then
+              echo "❌ ERROR: Bạn đang merge vào MAIN từ $SOURCE_BRANCH."
+              echo "👉 Quy định: Chỉ được merge từ 'dev' vào 'main'."
+              exit 1
+            fi
+            echo "✅ Hợp lệ: dev -> main"
+          
+          # --- TRƯỜNG HỢP 2: Merge vào DEV ---
+          elif [[ "$TARGET_BRANCH" == "dev" ]]; then
+            # Luật: Dev nhận tất cả (trừ khi bạn muốn chặn main merge ngược về)
+            echo "✅ Hợp lệ: Feature branch merge vào Dev."
+            
+          fi
