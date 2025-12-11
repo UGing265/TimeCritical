@@ -20,23 +20,27 @@ namespace UI
     public partial class ClockWindow : Window
     {
         private double aspectRatio = 4.0 / 3.0; // 4:3 aspect ratio
+        private bool isUserResizing = false;
 
         public ClockWindow()
         {
             InitializeComponent();
+            this.MouseLeftButtonDown += (s, e) => 
+            {
+                if (e.OriginalSource == this)
+                    isUserResizing = true;
+            };
+            this.MouseLeftButtonUp += (s, e) => isUserResizing = false;
             this.SizeChanged += ClockWindow_SizeChanged;
         }
 
         private void ClockWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // Maintain 4:3 aspect ratio
-            if (e.WidthChanged)
+            // Maintain 4:3 aspect ratio - prioritize width
+            double expectedHeight = this.Width / aspectRatio;
+            if (Math.Abs(this.Height - expectedHeight) > 0.5)
             {
-                this.Height = this.Width / aspectRatio;
-            }
-            else if (e.HeightChanged)
-            {
-                this.Width = this.Height * aspectRatio;
+                this.Height = expectedHeight;
             }
         }
     }

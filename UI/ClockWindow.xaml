@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UI"
         mc:Ignorable="d"
-        Title="Clock" Height="480" Width="640"
+        Title="Clock" Height="300" Width="400"
         WindowStartupLocation="CenterScreen"
         Background="#1a1a1a"
         BorderThickness="0"
         AllowsTransparency="False"
-        ResizeMode="CanResizeWithGrip"
-        MinHeight="240"
-        MinWidth="320">
+        ResizeMode="CanResize"
+        MinHeight="133"
+        MinWidth="133">
 
     <Window.Resources>
         <Style x:Key="ClockDisplayText" TargetType="TextBlock">
@@ -54,12 +54,15 @@
     </Window.Resources>
 
     <Grid Background="#1a1a1a">
-        <Border CornerRadius="20"
-                Background="#2a2a2a"
-                Padding="40"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Margin="20">
+        <Viewbox Stretch="UniformToFill">
+            <Grid Width="400" Height="300" Background="#1a1a1a">
+                <Border CornerRadius="20"
+                        Background="#2a2a2a"
+                        Padding="20"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Width="330"
+                        Height="215">
 
             <Border.Effect>
                 <DropShadowEffect BlurRadius="20"
@@ -150,6 +153,8 @@
 
             </Grid>
         </Border>
+            </Grid>
+        </Viewbox>
     </Grid>
 
 </Window>
