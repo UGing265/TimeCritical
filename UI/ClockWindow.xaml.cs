@@ -23,6 +23,7 @@ namespace UI
         private System.Windows.Threading.DispatcherTimer _timer;
         public DateTime TargetEndTime { get; set; }
         public bool IsCountingDown { get; set; } = false;
+        public MainWindow ParentWindow { get; set; }
 
         public ClockWindow()
         {
@@ -37,6 +38,8 @@ namespace UI
             _timer.Tick += Timer_Tick;
             
             BtnClose.Click += (s, e) => this.Close();
+            BtnDone.Click += BtnDone_Click;
+            BtnStopTimer.Click += BtnStopTimer_Click;
         }
 
         private void ApplyRoundedCorners()
@@ -103,5 +106,32 @@ namespace UI
             _timer.Stop();
             TxtTime.Text = DateTime.Now.ToString("HH:mm:ss");
         }
-    }
+
+        // --- BUTTON HANDLERS ---
+        private void BtnDone_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Cancel shutdown timer?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                CancelShutdown();
+            }
+        }
+
+        private void BtnStopTimer_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Cancel shutdown timer?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                CancelShutdown();
+            }
+        }
+
+        private void CancelShutdown()
+        {
+            // Call MainWindow's cancel method
+            if (ParentWindow != null)
+            {
+                ParentWindow.CancelShutdownTimer();
+            }
+        }    }
 }

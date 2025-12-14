@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UI"
         mc:Ignorable="d"
-        Title="TimeCritical - Kaspersky" Height="450" Width="800"
+        Title="TimeCritical" Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
         Background="#0F1419"
         >
@@ -232,7 +232,7 @@
                                Visibility="Collapsed"/>
 
                     <Button x:Name="BtnCancel"
-                            Content="⏹ STOP TIMER"
+                            Content="STOP TIMER"
                             Style="{StaticResource PrimaryButton}"
                             HorizontalAlignment="Left"
                             Click="BtnCancel_Click"

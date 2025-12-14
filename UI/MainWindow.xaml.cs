@@ -22,7 +22,7 @@ namespace UI
         System.Windows.Threading.DispatcherTimer _timer;
         DateTime _targetEndTime;
         private ClockWindow? _clockWindow; // Store reference to clock window
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,7 +32,9 @@ namespace UI
             _timer.Interval = TimeSpan.FromSeconds(1); // Tick every 1 second
             _timer.Tick += Timer_Tick;
 
-
+            // --- CHECKBOX EVENTS ---
+            ChkNow.Checked += ChkNow_CheckedChanged;
+            ChkNow.Unchecked += ChkNow_CheckedChanged;
         }
 
 
@@ -54,6 +56,14 @@ namespace UI
             }
         }
 
+
+        // --- HANDLE START NOW CHECKBOX ---
+        private void ChkNow_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            // When "Start Now" is checked, disable Start Time input
+            bool isStartNowChecked = ChkNow.IsChecked == true;
+            TxtStartTime.IsEnabled = !isStartNowChecked;
+        }
         private void BtnSchedule_Click(object sender, RoutedEventArgs e)
         {
 
@@ -77,16 +87,23 @@ namespace UI
             DateTime startAt = today + start;
             DateTime endAt = today + end;
             bool isNextDay = (CbxEndDay.SelectedIndex == 1);
+            bool isStartNowChecked = ChkNow.IsChecked == true;
 
             if (isNextDay) endAt = endAt.AddDays(1);
             //if (startAt < now) startAt = startAt.AddDays(1);      (coi chừng bị ngược =))
-            if (!isNextDay && end <= start)
+            //MessageBox.Show($"isNext:{isNextDay}\n isStartNow:{isStartNowChecked} \n end <= start:{end <= start}");
+            if (!isNextDay && !isStartNowChecked)
             {
-                MessageBox.Show("When End = Today, End time must be later than Start time.\n" +
-                                "If you want cross-midnight (e.g. Start 23:50 → End 01:00), choose 'Next day'.",
-                                "Invalid range", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                if (end <= start)
+
+                {
+                    MessageBox.Show("When End = Today, End time must be later than Start time.\n" +
+                                    "If you want cross-midnight (e.g. Start 23:50 → End 01:00), choose 'Next day'.",
+                                    "Invalid range", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
             }
+
 
             if (endAt <= now)
             {
@@ -113,7 +130,7 @@ namespace UI
             int secondsDuration = (int)Math.Ceiling(durationGap.TotalSeconds);
             //----------------
 
-            if(ChkNow.IsChecked == true) waitGap = TimeSpan.Zero;
+            if (ChkNow.IsChecked == true) waitGap = TimeSpan.Zero;
 
 
 
@@ -148,7 +165,7 @@ namespace UI
                  $"Confirm schedule?";
                 resultTotalSeconds = totalSeconds;
             }
-            MessageBox.Show($"{resultTotalSeconds}s", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show($"{resultTotalSeconds}s", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
 
             var result = MessageBox.Show(message,
                                          "Confirm set time",
@@ -165,12 +182,15 @@ namespace UI
             _targetEndTime = endAt;
             // 2. Start the Visual Countdown
             _timer.Start();
-            
-            // 3. Sync with Clock window if it's open
-            if (_clockWindow != null && _clockWindow.IsVisible)
+
+            // 3. Open Clock Window automatically and start countdown
+            if (_clockWindow == null || !_clockWindow.IsVisible)
             {
-                _clockWindow.StartCountdown(endAt);
-            };
+                _clockWindow = new ClockWindow();
+                _clockWindow.ParentWindow = this;
+                _clockWindow.Show();
+            }
+            _clockWindow.StartCountdown(endAt);
 
 
             // ---F.EXECUTE COMMAND(The "Hydra" Method)-- -
@@ -201,9 +221,9 @@ namespace UI
                     // 2. Lock Workstation.
                     // 3. Run timeout 2s, repeat 'runLoops' times.
                     // 4. Shutdown.
-                    MessageBox.Show($"result: {resultTotalSeconds} and step: {resultTotalSeconds / chunkSeconds}", "Success");
+                    //MessageBox.Show($"result: {resultTotalSeconds} and step: {resultTotalSeconds / chunkSeconds}", "Success");
                     args = $"/c " +
-                           $"(for /L %i in (1,1,{waitLoops+1}) do timeout /t {chunkSeconds} /nobreak >nul) && " +
+                           $"(for /L %i in (1,1,{waitLoops + 1}) do timeout /t {chunkSeconds} /nobreak >nul) && " +
                            $"rundll32.exe user32.dll,LockWorkStation && " +
                            $"(for /L %i in (1,1,{(int)resultTotalSeconds / chunkSeconds}) do timeout /t {chunkSeconds} /nobreak >nul) && " +
                            $"shutdown /s /f /t 0";
@@ -215,20 +235,20 @@ namespace UI
                     //       $"timeout /t {resultTotalSeconds / chunkSeconds} /nobreak && " +
                     //       $"shutdown /s /f /t 0";
 
-                    //Process.Start(new ProcessStartInfo
-                    //{
-                    //    FileName = "cmd",
-                    //    Arguments = args,
-                    //    CreateNoWindow = true,
-                    //    UseShellExecute = false
-                    //});
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "cmd",
+                        Arguments = args,
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    });
                     MessageBox.Show("Locked & Loaded! (Hydra Protection Active)", "Success");
                 }
                 else
                 {
                     // === MODE 2: SIMPLE SHUTDOWN ===
                     // Easy to cancel with 'shutdown /a'
-             
+
                     Process.Start("shutdown", $"/s /t {resultTotalSeconds}");
                     MessageBox.Show($"Shutdown scheduled in {resultTotalSeconds} seconds.\n(You can cancel this easily)", "Success");
                 }
@@ -242,17 +262,22 @@ namespace UI
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
+            CancelShutdownTimer();
+        }
+
+        public void CancelShutdownTimer()
+        {
             _timer.Stop();
             this.Title = "MainWindow"; // Reset Title
             Process.Start("shutdown", "/a"); // Cancel Windows Shutdown
             Process.Start(new ProcessStartInfo("taskkill", "/F /IM timeout.exe") { CreateNoWindow = true, UseShellExecute = false });
-            
+
             // Stop clock countdown if it's open
             if (_clockWindow != null && _clockWindow.IsVisible)
             {
                 _clockWindow.StopCountdown();
             }
-            
+
             MessageBox.Show("Schedule Cancelled.");
         }
 
@@ -264,15 +289,15 @@ namespace UI
                 _clockWindow.Activate();
                 return;
             }
-            
+
             _clockWindow = new ClockWindow();
-            
+
             // If countdown is already running, sync the clock with it
             if (_timer.IsEnabled)
             {
                 _clockWindow.StartCountdown(_targetEndTime);
             }
-            
+
             _clockWindow.Show();
         }
 

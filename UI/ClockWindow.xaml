@@ -14,6 +14,7 @@
         MinHeight="133"
         MinWidth="133"
         WindowStyle="None"
+        Topmost="True"
         >
     
 
@@ -84,39 +85,56 @@
                 <!-- Time Display -->
                 <TextBlock x:Name="TxtTime"
                            Grid.Row="0"
-                           Text="00:10:02"
+                           Text="--:--:--"
                            Style="{StaticResource ClockDisplayText}"
                            VerticalAlignment="Center"
                            Margin="0,30,0,0"/>
 
-                <!-- Buttons: Play/Reset and Close -->
+                <!-- Buttons: Done and Stop Timer -->
                 <StackPanel Grid.Row="1"
                             Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             Margin="0,20,0,0"
-                            Visibility="Collapsed"
                             >
 
-                    <!-- Play Button -->
-                    <Button x:Name="BtnPlay"
-                            Style="{StaticResource ClockButton}"
-                            Background="#9D4EDD">
-                        <Path Data="M 8 5 L 8 19 L 18 12 Z"
-                              Fill="White"
-                              Stretch="UniformToFill"
-                              Width="20"
-                              Height="20"/>
+                    <!-- Done Button -->
+                    <Button x:Name="BtnDone"
+                            Width="60"
+                            Height="60"
+                            Margin="10,0"
+                            Background="#1ABC9C"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            FontSize="24"
+                            Content="✓">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="30">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
                     </Button>
 
-                    <!-- Reset/Refresh Button -->
-                    <Button x:Name="BtnReset"
-                            Style="{StaticResource ClockButton}"
-                            Background="#555555">
-                        <Path Data="M 12 2 C 6.48 2 2 6.48 2 12 C 2 17.52 6.48 22 12 22 C 17.52 22 22 17.52 22 12 L 20 12 C 20 16.41 16.41 20 12 20 C 7.59 20 4 16.41 4 12 C 4 7.59 7.59 4 12 4 C 14.04 4 15.93 4.75 17.29 6 L 14 6 L 14 8 L 20 8 L 20 2 L 18 2 L 18 5.29 C 16.37 3.74 14.23 2 12 2 Z"
-                              Fill="White"
-                              Stretch="UniformToFill"
-                              Width="20"
-                              Height="20"/>
+                    <!-- Stop Timer Button -->
+                    <Button x:Name="BtnStopTimer"
+                            Width="60"
+                            Height="60"
+                            Margin="10,0"
+                            Background="#FF6B6B"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            FontSize="24"
+                            Content="⏹">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="30">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
                     </Button>
 
                 </StackPanel>
