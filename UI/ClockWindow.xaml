@@ -99,14 +99,14 @@
 
                     <!-- Done Button -->
                     <Button x:Name="BtnDone"
-                            Width="60"
-                            Height="60"
+                            Width="49"
+                            Height="49"
                             Margin="10,0"
                             Background="#1ABC9C"
                             Foreground="White"
                             BorderThickness="0"
                             Cursor="Hand"
-                            FontSize="24"
+                            FontSize="19"
                             Content="✓">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
@@ -119,14 +119,14 @@
 
                     <!-- Stop Timer Button -->
                     <Button x:Name="BtnStopTimer"
-                            Width="60"
-                            Height="60"
+                            Width="49"
+                            Height="49"
                             Margin="10,0"
-                            Background="#FF6B6B"
+                            Background="#4a4a4a"
                             Foreground="White"
                             BorderThickness="0"
                             Cursor="Hand"
-                            FontSize="24"
+                            FontSize="15"
                             Content="⏹">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
