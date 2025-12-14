@@ -195,12 +195,18 @@
                           Content="Start Now ?" />
 
                 <!-- Nút đặt lịch -->
-                <Button x:Name="btnSchedule"
-                        Grid.Row="6"
-                        Content="Set time"
-                        Style="{StaticResource PrimaryButton}"
-                        Click="BtnSchedule_Click"
-                        />
+                <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="btnSchedule"
+                            Content="Set time"
+                            Style="{StaticResource PrimaryButton}"
+                            Click="BtnSchedule_Click"
+                            />
+                    <Button x:Name="btnOpenClock"
+                            Content="📊 Clock"
+                            Style="{StaticResource PrimaryButton}"
+                            Click="BtnOpenClock_Click"
+                            />
+                </StackPanel>
 
                 <StackPanel Grid.Row="8" VerticalAlignment="Bottom" Margin="0,10,0,0">
                     <TextBlock x:Name="TxtCountdown" 

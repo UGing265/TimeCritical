@@ -21,6 +21,8 @@ namespace UI
         // --- 1. VARIABLES FOR THE COUNTDOWN ---
         System.Windows.Threading.DispatcherTimer _timer;
         DateTime _targetEndTime;
+        private ClockWindow? _clockWindow; // Store reference to clock window
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -33,7 +35,7 @@ namespace UI
 
         }
 
-        
+
         // --- 3. THE COUNTDOWN LOGIC (Visual Only) ---
         private void Timer_Tick(object? sender, EventArgs e)
         {
@@ -77,7 +79,7 @@ namespace UI
             bool isNextDay = (CbxEndDay.SelectedIndex == 1);
 
             if (isNextDay) endAt = endAt.AddDays(1);
-            if (startAt < now) startAt = startAt.AddDays(1);
+            //if (startAt < now) startAt = startAt.AddDays(1);      (coi chừng bị ngược =))
             if (!isNextDay && end <= start)
             {
                 MessageBox.Show("When End = Today, End time must be later than Start time.\n" +
@@ -100,7 +102,7 @@ namespace UI
 
             // a. (now -> EndAt)
             TimeSpan delta = endAt - now;
-            int totalSeconds = (int)Math.Ceiling(delta.TotalSeconds); 
+            int totalSeconds = (int)Math.Ceiling(delta.TotalSeconds);
             //-----Combo------
             // B. (now -> StartAt)
             TimeSpan waitGap = startAt - now;
@@ -111,6 +113,7 @@ namespace UI
             int secondsDuration = (int)Math.Ceiling(durationGap.TotalSeconds);
             //----------------
 
+            if(ChkNow.IsChecked == true) waitGap = TimeSpan.Zero;
 
 
 
@@ -121,28 +124,28 @@ namespace UI
 
             if (ChkNow.IsChecked != true)
             {
-                 message =
-                  $"Current Time: {now:HH:mm}\n" +
-                  $"-----------------------------\n" +
-                  $"1. Wait until: {startAt:HH:mm tt} (in {waitGap.Hours}h {waitGap.Minutes}m)\n" +
-                  $"2. Then run for: {Math.Ceiling(durationGap.TotalHours)}h {durationGap.Minutes}m\n" +
-                  $"3. Final Shutdown: {endAt:HH:mm tt}\n" +
-                  $"-----------------------------\n" +
-                  $"Mode: {lockText}\n\n" +
-                  $"Confirm schedule?";
+                message =
+                 $"Current Time: {now:HH:mm}\n" +
+                 $"-----------------------------\n" +
+                 $"1. Wait until: {startAt:HH:mm tt} (in {waitGap.Hours}h {waitGap.Minutes}m)\n" +
+                 $"2. Then run for: {Math.Ceiling(durationGap.TotalHours)}h {durationGap.Minutes}m\n" +
+                 $"3. Final Shutdown: {endAt:HH:mm tt}\n" +
+                 $"-----------------------------\n" +
+                 $"Mode: {lockText}\n\n" +
+                 $"Confirm schedule?";
                 resultTotalSeconds = secondsDuration;
             }
             else
             {
-                 message =
-                  $"Current Time: {now:HH:mm}\n" +
-                  $"-----------------------------\n" +
-                  $"1. Start Time: {now:HH:mm tt} \n" +
-                  $"2. Remaing time: {Math.Ceiling(delta.TotalHours)}h {delta.Minutes}m\n" +
-                  $"3. Final Shutdown: {endAt:HH:mm tt}\n" +
-                  $"-----------------------------\n" +
-                  $"Mode: {lockText}\n\n" +
-                  $"Confirm schedule?";
+                message =
+                 $"Current Time: {now:HH:mm}\n" +
+                 $"-----------------------------\n" +
+                 $"1. Start Time: {now:HH:mm tt} \n" +
+                 $"2. Remaing time: {Math.Ceiling(delta.TotalHours)}h {delta.Minutes}m\n" +
+                 $"3. Final Shutdown: {endAt:HH:mm tt}\n" +
+                 $"-----------------------------\n" +
+                 $"Mode: {lockText}\n\n" +
+                 $"Confirm schedule?";
                 resultTotalSeconds = totalSeconds;
             }
             MessageBox.Show($"{resultTotalSeconds}s", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -162,30 +165,73 @@ namespace UI
             _targetEndTime = endAt;
             // 2. Start the Visual Countdown
             _timer.Start();
+            
+            // 3. Sync with Clock window if it's open
+            if (_clockWindow != null && _clockWindow.IsVisible)
+            {
+                _clockWindow.StartCountdown(endAt);
+            };
 
+
+            // ---F.EXECUTE COMMAND(The "Hydra" Method)-- -
             try
             {
+
+                // 1. We split the total time into tiny 2-second chunks.
+                // If you kill 'timeout.exe', it just respawns instantly.
+                int chunkSeconds = 2;
+
+                int waitLoops = (int)waitGap.TotalSeconds / chunkSeconds;
+                int runLoops = (int)durationGap.TotalSeconds / chunkSeconds;
+                int totalLoops = totalSeconds / chunkSeconds;
+
+
+                string args;
+
+
                 if (ChkLock.IsChecked == true)
                 {
-                    // MODE: LOCK
-                    var psi = new ProcessStartInfo
-                    {
-                        FileName = "cmd",
-                        Arguments = $"/c timeout /t {secondToWaits} /nobreak && shutdown /s /f /t {resultTotalSeconds}",
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    };
-                    //Process.Start(psi);
-                    MessageBox.Show("Fake checked", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // === MODE 1: HARD LOCK (The "Hydra" Loop) ===
+                    // Hard to kill. If you kill it, it just skips time.
+
+                    // LOOP 1 (Wait) -> LOCK -> LOOP 2 (Duration) -> SHUTDOWN
+                    // Logic:
+                    // 1. Run timeout 2s, repeat 'waitLoops' times.
+                    // 2. Lock Workstation.
+                    // 3. Run timeout 2s, repeat 'runLoops' times.
+                    // 4. Shutdown.
+                    MessageBox.Show($"result: {resultTotalSeconds} and step: {resultTotalSeconds / chunkSeconds}", "Success");
+                    args = $"/c " +
+                           $"(for /L %i in (1,1,{waitLoops+1}) do timeout /t {chunkSeconds} /nobreak >nul) && " +
+                           $"rundll32.exe user32.dll,LockWorkStation && " +
+                           $"(for /L %i in (1,1,{(int)resultTotalSeconds / chunkSeconds}) do timeout /t {chunkSeconds} /nobreak >nul) && " +
+                           $"shutdown /s /f /t 0";
+                    //args = $"/k echo [1] Waiting {waitLoops}s... && " +
+                    //       $"timeout /t {waitLoops} /nobreak && " +
+                    //       $"echo [2] Locking now... && " +
+                    //       $"rundll32.exe user32.dll,LockWorkStation && " +
+                    //       $"echo [3] Locked. Waiting {resultTotalSeconds / chunkSeconds}s for Shutdown... && " +
+                    //       $"timeout /t {resultTotalSeconds / chunkSeconds} /nobreak && " +
+                    //       $"shutdown /s /f /t 0";
+
+                    //Process.Start(new ProcessStartInfo
+                    //{
+                    //    FileName = "cmd",
+                    //    Arguments = args,
+                    //    CreateNoWindow = true,
+                    //    UseShellExecute = false
+                    //});
+                    MessageBox.Show("Locked & Loaded! (Hydra Protection Active)", "Success");
                 }
                 else
                 {
-                    //MODE: UNLOCK
-                    MessageBox.Show("Fake no checkbox", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
-                    //Process.Start("shutdown", $"/s /t {resultTotalSeconds}");
+                    // === MODE 2: SIMPLE SHUTDOWN ===
+                    // Easy to cancel with 'shutdown /a'
+             
+                    Process.Start("shutdown", $"/s /t {resultTotalSeconds}");
+                    MessageBox.Show($"Shutdown scheduled in {resultTotalSeconds} seconds.\n(You can cancel this easily)", "Success");
                 }
-                //MessageBox.Show("Sucessful set schedule", "Good", MessageBoxButton.OK, MessageBoxImage.Information);
-
             }
             catch (Exception ex)
             {
@@ -200,7 +246,34 @@ namespace UI
             this.Title = "MainWindow"; // Reset Title
             Process.Start("shutdown", "/a"); // Cancel Windows Shutdown
             Process.Start(new ProcessStartInfo("taskkill", "/F /IM timeout.exe") { CreateNoWindow = true, UseShellExecute = false });
+            
+            // Stop clock countdown if it's open
+            if (_clockWindow != null && _clockWindow.IsVisible)
+            {
+                _clockWindow.StopCountdown();
+            }
+            
             MessageBox.Show("Schedule Cancelled.");
+        }
+
+        private void BtnOpenClock_Click(object sender, RoutedEventArgs e)
+        {
+            // If clock window is already open, just bring it to focus
+            if (_clockWindow != null && _clockWindow.IsVisible)
+            {
+                _clockWindow.Activate();
+                return;
+            }
+            
+            _clockWindow = new ClockWindow();
+            
+            // If countdown is already running, sync the clock with it
+            if (_timer.IsEnabled)
+            {
+                _clockWindow.StartCountdown(_targetEndTime);
+            }
+            
+            _clockWindow.Show();
         }
 
 

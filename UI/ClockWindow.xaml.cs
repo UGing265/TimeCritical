@@ -20,6 +20,9 @@ namespace UI
     public partial class ClockWindow : Window
     {
         private double aspectRatio = 4.0 / 3.0; // 4:3 aspect ratio
+        private System.Windows.Threading.DispatcherTimer _timer;
+        public DateTime TargetEndTime { get; set; }
+        public bool IsCountingDown { get; set; } = false;
 
         public ClockWindow()
         {
@@ -27,6 +30,13 @@ namespace UI
             this.SizeChanged += ClockWindow_SizeChanged;
             this.MouseLeftButtonDown += Window_MouseLeftButtonDown;
             this.SourceInitialized += (s, e) => ApplyRoundedCorners();
+            
+            // Setup Timer
+            _timer = new System.Windows.Threading.DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += Timer_Tick;
+            
+            BtnClose.Click += (s, e) => this.Close();
         }
 
         private void ApplyRoundedCorners()
@@ -56,6 +66,42 @@ namespace UI
             {
                 this.DragMove();
             }
+        }
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            if (!IsCountingDown)
+            {
+                TxtTime.Text = DateTime.Now.ToString("HH:mm:ss");
+            }
+            else
+            {
+                TimeSpan remaining = TargetEndTime - DateTime.Now;
+
+                if (remaining.TotalSeconds <= 0)
+                {
+                    _timer.Stop();
+                    TxtTime.Text = "00:00:00";
+                }
+                else
+                {
+                    TxtTime.Text = $"{remaining:hh\\:mm\\:ss}";
+                }
+            }
+        }
+
+        public void StartCountdown(DateTime targetEndTime)
+        {
+            TargetEndTime = targetEndTime;
+            IsCountingDown = true;
+            _timer.Start();
+        }
+
+        public void StopCountdown()
+        {
+            IsCountingDown = false;
+            _timer.Stop();
+            TxtTime.Text = DateTime.Now.ToString("HH:mm:ss");
         }
     }
 }
