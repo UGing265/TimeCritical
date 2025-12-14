@@ -3,9 +3,9 @@ name: Build .NET Exe
 # Cấu hình trigger: Chạy khi Push vào main HOẶC khi có PR vào main
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main" ]
 
 jobs:
   build:
