@@ -1,0 +1,44 @@
+name: Build .NET Exe
+
+# Cấu hình trigger: Chạy khi Push vào main HOẶC khi có PR vào main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build Windows Exe
+    # Sử dụng windows-latest để đảm bảo tương thích tốt nhất (đặc biệt nếu là WPF/WinForms)
+    runs-on: windows-latest
+
+    steps:
+    # Bước 1: Lấy code về
+    - uses: actions/checkout@v4
+
+    # Bước 2: Cài đặt .NET (Thay đổi version 8.0 tùy theo project của bạn)
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    # Bước 3: Restore dependencies
+    - name: Restore dependencies
+      run: dotnet restore
+
+    # Bước 4: Build và Publish ra file .exe
+    # -c Release: Build bản release tối ưu
+    # -r win-x64: Định dạng cho Windows 64-bit
+    # --self-contained: Gói kèm .NET Runtime (máy người dùng không cần cài .NET vẫn chạy được)
+    # -p:PublishSingleFile=true: Gom tất cả thành 1 file .exe duy nhất
+    - name: Publish EXE
+      run: dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o ./publish_output
+
+    # Bước 5: Upload file .exe lên Artifacts để bạn tải về
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Windows-Executable
+        path: ./publish_output/*.exe
+        # Hoặc dùng path: ./publish_output/ nếu muốn lấy cả thư mục
