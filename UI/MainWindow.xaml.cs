@@ -183,6 +183,10 @@ namespace UI
             // 2. Start the Visual Countdown
             _timer.Start();
 
+            // Toggle visibility: Hide Set Timer/Clock buttons, Show STOP TIMER
+            ActionButtonsPanel.Visibility = Visibility.Collapsed;
+            BtnCancel.Visibility = Visibility.Visible;
+
             // 3. Open Clock Window automatically and start countdown
             if (_clockWindow == null || !_clockWindow.IsVisible)
             {
@@ -277,6 +281,10 @@ namespace UI
             {
                 _clockWindow.StopCountdown();
             }
+
+            // Toggle visibility back: Show Set Timer/Clock buttons, Hide STOP TIMER
+            ActionButtonsPanel.Visibility = Visibility.Visible;
+            BtnCancel.Visibility = Visibility.Collapsed;
 
             MessageBox.Show("Schedule Cancelled.");
         }

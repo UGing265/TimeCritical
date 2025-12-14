@@ -207,14 +207,15 @@
                           Content="Start Now ?" />
 
                 <!-- Action Buttons -->
-                <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel x:Name="ActionButtonsPanel"
+                            Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="btnSchedule"
                             Content="Set Timer"
                             Style="{StaticResource PrimaryButton}"
                             Click="BtnSchedule_Click"
                             />
                     <Button x:Name="btnOpenClock"
-                            Content="📊 Clock"
+                            Content="Clock"
                             Style="{StaticResource PrimaryButton}"
                             Click="BtnOpenClock_Click"
                             />
@@ -236,7 +237,7 @@
                             Style="{StaticResource PrimaryButton}"
                             HorizontalAlignment="Left"
                             Click="BtnCancel_Click"
-                            Visibility="Visible"
+                            Visibility="Collapsed"
                             />        
                 </StackPanel>
 
