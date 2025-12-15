@@ -5,12 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="TimeCritical" Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
+        Background="#0F1419"
         >
 
     <Window.Resources>
-        <!-- Title Tiêu đề-->
+        <!-- Kaspersky-Inspired Theme: Orange + Teal with Soft Glows -->
+        <!-- Primary Orange: #FF9800, Teal CTA: #1ABC9C, Dark: #0F1419, Card: #1a1f2e -->
+        
+        <!-- Title -->
         <Style x:Key="TitleText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Foreground" Value="White"/>
@@ -19,26 +23,27 @@
 
         <Style x:Key="LabelText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="#E5E7EB"/>
+            <Setter Property="Foreground" Value="#D0D0D0"/>
         </Style>
 
         <Style x:Key="comboBoxTime" TargetType="ComboBox">
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="30"/>
             <Setter Property="Margin" Value="8,0,0,0"/>
             <Setter Property="Padding" Value="30,1"/>
-            <Setter Property="Background" Value="Black"/>
-            <Setter Property="BorderBrush" Value="Blue"/>
+            <Setter Property="Background" Value="#1a1f2e"/>
+            <Setter Property="BorderBrush" Value="#1ABC9C"/>
             <Setter Property="BorderThickness" Value="2"/>
         </Style>
 
-        <!-- Nút chính -->
+        <!-- Primary Button - Kaspersky Teal CTA -->
         <Style x:Key="PrimaryButton" TargetType="Button">
             <Setter Property="Margin" Value="4"/>
             <Setter Property="Padding" Value="10,6"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="Background" Value="#1ABC9C"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -47,7 +52,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}"
-                                CornerRadius="8">
+                                CornerRadius="6">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
                         </Border>
@@ -56,27 +61,27 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#2563EB"/>
+                    <Setter Property="Background" Value="#16a085"/>
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#1D4ED8"/>
+                    <Setter Property="Background" Value="#117a65"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-        <!-- TextBox thời gian -->
+        <!-- TextBox Time -->
         <Style x:Key="TimeTextBox" TargetType="TextBox">
             <Setter Property="Margin" Value="4"/>
             <Setter Property="Padding" Value="6,4"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Background" Value="#020617"/>
-            <Setter Property="BorderBrush" Value="#374151"/>
+            <Setter Property="Background" Value="#1a1f2e"/>
+            <Setter Property="BorderBrush" Value="#1ABC9C"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Width" Value="120"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="CaretBrush" Value="#1ABC9C"/>
         </Style>
-
 
     </Window.Resources>
 
@@ -86,19 +91,24 @@
         <TextBlock Text="TimeCritical" 
                    Style="{StaticResource TitleText}"
                    HorizontalAlignment="Center"
-                   Foreground="Red"
+                   Foreground="#FF5050"
                    FontSize="50"
+                   FontWeight="Black"
                    Margin="0,10"
                    />
 
-        <Border CornerRadius="18"
-                Background="#121637"
-                Padding="20"
+        <Border CornerRadius="16"
+                Background="#1a1f2e"
+                Padding="10"
                 Width="620"
-                Height="260"
+                Height="290"
+                Margin="0,50,0,0"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-            
+                VerticalAlignment="Center"
+                BorderBrush="#1ABC9C"
+                BorderThickness="2"
+                Opacity="0.95">
+
             <Border.Effect>
                 <DropShadowEffect BlurRadius="16"
                                   ShadowDepth="0"
@@ -119,32 +129,39 @@
                     <RowDefinition Height="20"/>
                     <!-- button -->
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="20"/>
+                    <!-- see result -->
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Tiêu đề -->
+                <!-- Title -->
                 <StackPanel Orientation="Vertical" Grid.Row="0">
-                    <TextBlock Text="Hẹn giờ tắt máy" Foreground="Red" 
+                    <TextBlock Text="SCHEDULED SHUTDOWN" 
+                               Foreground="#1ABC9C" 
                                Style="{StaticResource TitleText}"
+                               FontSize="14"
+                               FontWeight="ExtraBold"
                                />
-                    <TextBlock Text="Nhập thời gian bắt đầu và kết thúc rồi bấm Đặt lịch."
+                    <TextBlock Text="Configure your system shutdown timer"
                                Style="{StaticResource LabelText}"
                                Margin="40,0,0,0"
+                               FontSize="12"
                                />
                 </StackPanel>
 
 
-                <!-- Hàng Start / End -->
+                <!-- Time Input Row -->
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Start -->
                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                        <TextBlock Text="Thời gian bắt đầu (Start)"
+                        <TextBlock Text="Start Time"
                                    Style="{StaticResource LabelText}"/>
-                        <!-- Gợi ý định dạng: HH:mm -->
                         <TextBox x:Name="TxtStartTime"
                                  Style="{StaticResource TimeTextBox}"
                                  Text="22:30"/>
@@ -152,26 +169,77 @@
 
                     <!-- End -->
                     <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                        <TextBlock Text="Thời gian kết thúc (End)"
+                        <TextBlock Text="End Time"
                                    Style="{StaticResource LabelText}"/>
                         <TextBox x:Name="TxtEndTime"
                                  Style="{StaticResource TimeTextBox}"
                                  Text="23:45"/>
                     </StackPanel>
+
+                    <!-- Day Selection -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="End Day"
+                                   Style="{StaticResource LabelText}"/>
+                        <ComboBox x:Name="CbxEndDay"
+                                  Margin="6"
+                                  Width="110"
+                                  HorizontalAlignment="Left"
+                                  >
+                            <ComboBoxItem Content="Today" IsSelected="True"/>
+                            <ComboBoxItem Content="Next day"/>
+                        </ComboBox>
+                    </StackPanel>
                 </Grid>
 
-                <!-- Checkbox Lock -->
+                <!-- Checkboxes -->
                 <CheckBox x:Name="ChkLock"
                           Grid.Row="4"
                           Margin="4,0,0,0"
-                          Foreground="#E5E7EB"
+                          Foreground="#BDBDBD"
                           FontSize="13"
-                          Content="Khóa máy khi đến thời gian End" />
+                          Content="Lock Shutdown" />
 
-                <!-- Nút đặt lịch -->
-                <Button Grid.Row="6"
-                        Content="Đặt lịch"
-                        Style="{StaticResource PrimaryButton}"/>
+                <CheckBox x:Name="ChkNow"
+                          Grid.Row="5"
+                          Margin="4,0,0,0"
+                          Foreground="#BDBDBD"
+                          FontSize="13"
+                          Content="Start Now ?" />
+
+                <!-- Action Buttons -->
+                <StackPanel x:Name="ActionButtonsPanel"
+                            Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="btnSchedule"
+                            Content="Set Timer"
+                            Style="{StaticResource PrimaryButton}"
+                            Click="BtnSchedule_Click"
+                            />
+                    <Button x:Name="btnOpenClock"
+                            Content="Clock"
+                            Style="{StaticResource PrimaryButton}"
+                            Click="BtnOpenClock_Click"
+                            />
+                </StackPanel>
+
+                <!-- Countdown Display -->
+                <StackPanel Grid.Row="8" VerticalAlignment="Bottom" Margin="0,10,0,0">
+                    <TextBlock x:Name="TxtCountdown" 
+                               Style="{StaticResource LabelText}"
+                               Foreground="#1ABC9C" 
+                               HorizontalAlignment="Center"
+                               Text="Waiting..." 
+                               FontWeight="Bold"
+                               FontSize="16"
+                               Visibility="Collapsed"/>
+
+                    <Button x:Name="BtnCancel"
+                            Content="STOP TIMER"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left"
+                            Click="BtnCancel_Click"
+                            Visibility="Collapsed"
+                            />        
+                </StackPanel>
 
             </Grid>
         </Border>
